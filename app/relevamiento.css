@@ -1,24 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root{
-  --blue:#2F6FE0;
-  --blue-light:#62A0DC;
-  --ink:#181B22;
-  --bg:#F1F3F6;
-  --card:#FFFFFF;
-  --line:#E3E7ED;
-  --line-strong:#D2D8E0;
-  --muted:#6B7280;
-  --muted-soft:#9AA2AE;
-  --blue-wash:#EFF4FC;
-  --danger:#C2473B;
-  --ok:#2E8B57;
-  --radius:14px;
-  --shadow:0 1px 2px rgba(24,27,34,.04), 0 8px 24px rgba(24,27,34,.05);
-  --shadow-soft:0 1px 2px rgba(24,27,34,.03);
-  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
-}
-
 .relevamiento-page{
   font-family:var(--font);
   background:var(--bg);
@@ -31,17 +10,6 @@
 .relevamiento-page *{box-sizing:border-box;}
 
 .relevamiento-page .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
-
-/* ---------- Header ---------- */
-.relevamiento-page .topbar{background:var(--card);border-bottom:1px solid var(--line);}
-.relevamiento-page .topbar .wrap{display:flex;align-items:center;gap:12px;padding-top:18px;padding-bottom:18px;}
-.relevamiento-page .logo{display:flex;align-items:center;gap:10px;}
-.relevamiento-page .logo svg{display:block;height:30px;width:auto;}
-.relevamiento-page .logo .word{font-weight:800;font-size:22px;letter-spacing:-.03em;color:var(--ink);}
-.relevamiento-page .topbar .tag{
-  margin-left:auto;font-size:12.5px;color:var(--muted);font-weight:500;
-  border-left:1px solid var(--line);padding-left:12px;
-}
 
 /* ---------- Page title ---------- */
 .relevamiento-page .eyebrow{
@@ -226,6 +194,5 @@
   .relevamiento-page .kpis{grid-template-columns:repeat(2,1fr);}
   .relevamiento-page .resp-row{grid-template-columns:1fr 1fr;gap:7px;}
   .relevamiento-page .resp-row .del-resp{grid-column:span 2;width:100%;}
-  .relevamiento-page .topbar .tag{display:none;}
   .relevamiento-page .actions .summary-note{width:100%;margin-bottom:4px;}
 }

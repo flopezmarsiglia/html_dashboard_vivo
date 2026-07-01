@@ -1,0 +1,129 @@
+.preview-page{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding:0 0 60px;
+  min-height:100vh;
+}
+.preview-page *{box-sizing:border-box;}
+
+.preview-page .pv-wrap{max-width:1000px;margin:0 auto;padding:0 20px;}
+
+.preview-page .pv-intro{padding-top:36px;}
+.preview-page .eyebrow{
+  font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:12px;
+}
+.preview-page h1{font-size:28px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 10px;}
+.preview-page .pv-lead{font-size:14.5px;color:var(--muted);max-width:640px;margin:0;}
+
+.preview-page .pv-banner{
+  margin-top:18px;display:flex;align-items:center;gap:9px;
+  background:var(--blue-wash);border:1px solid #D7E5FA;color:var(--blue);
+  font-size:12.5px;font-weight:600;padding:9px 14px;border-radius:10px;
+}
+.preview-page .pv-banner svg{width:15px;height:15px;flex:none;}
+
+/* ---------- Leyenda ---------- */
+.preview-page .arch-legend{display:flex;flex-wrap:wrap;gap:16px;margin:22px 0 0;}
+.preview-page .arch-legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);}
+.preview-page .arch-legend-swatch{width:11px;height:11px;border-radius:4px;flex:none;}
+.preview-page .arch-legend-swatch.dash{background:var(--card);border:1px solid var(--line-strong);}
+.preview-page .arch-legend-swatch.db{background:var(--ink);}
+.preview-page .arch-legend-swatch.area{background:var(--card);border:1px solid var(--line-strong);}
+.preview-page .arch-legend-swatch.process{background:var(--blue-wash);border:1px solid #D7E5FA;}
+
+/* ---------- Mock dashboard (arriba del todo) ---------- */
+.preview-page .arch-dash-mock{
+  margin:30px auto 0;max-width:320px;
+  background:linear-gradient(180deg,#FAFBFD,#F4F6F9);
+  border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--shadow);padding:14px 16px;
+}
+.preview-page .arch-dash-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.preview-page .arch-dash-head .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,139,87,.15);}
+.preview-page .arch-dash-head .t{font-size:12.5px;font-weight:700;color:var(--ink);}
+.preview-page .arch-ghost-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.preview-page .arch-ghost-kpi{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 9px;}
+.preview-page .arch-ghost-kpi .b1{height:5px;border-radius:3px;background:#E7EBF1;width:60%;margin-bottom:6px;}
+.preview-page .arch-ghost-kpi .b2{height:10px;border-radius:3px;background:#DCE3EC;width:75%;}
+
+/* ---------- Conector con flecha (dashboard -> base de datos) ---------- */
+.preview-page .arch-connector{display:flex;justify-content:center;padding:6px 0;}
+.preview-page .arch-connector .circle{
+  width:26px;height:26px;border-radius:50%;background:#fff;
+  border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+  color:var(--blue-light);box-shadow:var(--shadow-soft);
+}
+.preview-page .arch-connector svg{width:13px;height:13px;}
+
+/* ---------- Nodo de base de datos ---------- */
+.preview-page .arch-db-row{display:flex;justify-content:center;}
+.preview-page .arch-node.db{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--ink);color:#fff;font-family:var(--font);font-weight:700;font-size:13.5px;
+  padding:11px 18px;border-radius:12px;box-shadow:0 6px 16px rgba(24,27,34,.22);white-space:nowrap;
+}
+.preview-page .arch-node.db svg{width:16px;height:16px;flex:none;}
+
+/* ---------- Árbol (CSS puro, tipo organigrama) ---------- */
+.preview-page .arch-scroll-hint{display:none;text-align:center;font-size:11.5px;color:var(--muted-soft);margin-top:8px;}
+.preview-page .arch-tree-wrap{margin-top:0;overflow-x:auto;padding-bottom:10px;}
+.preview-page .arch-tree,
+.preview-page .arch-tree ul,
+.preview-page .arch-tree li{
+  list-style:none;margin:0;padding:0;position:relative;
+}
+.preview-page .arch-tree{display:flex;justify-content:center;min-width:min-content;}
+.preview-page .arch-tree ul{display:flex;padding-top:26px;}
+.preview-page .arch-tree li{
+  display:flex;flex-direction:column;align-items:center;
+  padding:26px 12px 0;position:relative;
+}
+.preview-page .arch-tree li::before,
+.preview-page .arch-tree li::after{
+  content:'';position:absolute;top:0;right:50%;
+  border-top:2px solid var(--line-strong);width:50%;height:26px;
+}
+.preview-page .arch-tree li::after{
+  right:auto;left:50%;border-left:2px solid var(--line-strong);
+}
+.preview-page .arch-tree li:only-child::after,
+.preview-page .arch-tree li:only-child::before{display:none;}
+.preview-page .arch-tree li:only-child{padding-top:0;}
+.preview-page .arch-tree li:first-child::before,
+.preview-page .arch-tree li:last-child::after{border:0 none;}
+.preview-page .arch-tree li:last-child::before{
+  border-right:2px solid var(--line-strong);border-radius:0 6px 0 0;
+}
+.preview-page .arch-tree li:first-child::after{border-radius:6px 0 0 0;}
+.preview-page .arch-tree ul::before{
+  content:'';position:absolute;top:0;left:50%;
+  border-left:2px solid var(--line-strong);width:0;height:26px;
+}
+
+.preview-page .arch-node.area{
+  display:inline-flex;align-items:center;
+  background:var(--card);border:1px solid var(--line-strong);color:var(--ink);
+  font-family:var(--font);font-weight:700;font-size:13px;
+  padding:9px 14px;border-radius:10px;box-shadow:var(--shadow-soft);white-space:nowrap;
+}
+.preview-page .arch-node.process{
+  display:inline-flex;align-items:center;
+  background:var(--blue-wash);border:1px solid #D7E5FA;color:var(--blue);
+  font-family:var(--font);font-weight:600;font-size:12px;
+  padding:7px 12px;border-radius:9px;white-space:nowrap;
+}
+
+.preview-page .pv-back{margin-top:34px;}
+.preview-page .pv-back a{font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;}
+.preview-page .pv-back a:hover{text-decoration:underline;}
+
+@media (max-width:900px){
+  .preview-page .arch-scroll-hint{display:block;}
+}
+@media (max-width:640px){
+  .preview-page h1{font-size:22px;}
+}

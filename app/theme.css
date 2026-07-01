@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --blue:#2F6FE0;
+  --blue-light:#62A0DC;
+  --ink:#181B22;
+  --bg:#F1F3F6;
+  --card:#FFFFFF;
+  --line:#E3E7ED;
+  --line-strong:#D2D8E0;
+  --muted:#6B7280;
+  --muted-soft:#9AA2AE;
+  --blue-wash:#EFF4FC;
+  --danger:#C2473B;
+  --ok:#2E8B57;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(24,27,34,.04), 0 8px 24px rgba(24,27,34,.05);
+  --shadow-soft:0 1px 2px rgba(24,27,34,.03);
+  --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+
+/* ---------- Topbar + tabs (compartido entre el formulario y la vista previa) ---------- */
+.topbar{background:var(--card);border-bottom:1px solid var(--line);font-family:var(--font);}
+.topbar .wrap{display:flex;align-items:center;gap:12px;padding-top:18px;padding-bottom:18px;max-width:1040px;margin:0 auto;padding-left:20px;padding-right:20px;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo svg{display:block;height:30px;width:auto;}
+.logo .word{font-weight:800;font-size:22px;letter-spacing:-.03em;color:var(--ink);}
+
+.tabnav{margin-left:auto;display:flex;align-items:center;gap:4px;border-left:1px solid var(--line);padding-left:12px;}
+.tabnav a{
+  font-family:var(--font);font-size:12.5px;font-weight:600;text-decoration:none;
+  color:var(--muted);padding:7px 12px;border-radius:20px;transition:background .12s,color .12s;
+}
+.tabnav a:hover{background:var(--blue-wash);color:var(--blue);}
+.tabnav a.active{background:var(--blue-wash);color:var(--blue);}
+
+@media (max-width:640px){
+  .tabnav{margin-left:0;width:100%;border-left:none;padding-left:0;justify-content:flex-start;}
+  .topbar .wrap{flex-wrap:wrap;row-gap:10px;}
+}

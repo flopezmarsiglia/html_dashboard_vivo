@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import "./theme.css";
 import "./relevamiento.css";
+import TabNav from "./components/TabNav";
 
 type Responsable = {
   id: string;
@@ -217,7 +219,7 @@ export default function Home() {
             </svg>
             <span className="word">loopers</span>
           </div>
-          <div className="tag">Relevamiento de procesos</div>
+          <TabNav active="form" />
         </div>
       </div>
 
