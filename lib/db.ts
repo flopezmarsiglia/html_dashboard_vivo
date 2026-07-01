@@ -58,9 +58,15 @@ export type Proceso = {
   responsables: Responsable[];
 };
 
+export type Area = {
+  nombre: string;
+  descripcion: string;
+  procesos: Proceso[];
+};
+
 export type SubmissionPayload = {
   concesionaria: string;
-  procesos: Proceso[];
+  areas: Area[];
 };
 
 export type SubmissionRow = {

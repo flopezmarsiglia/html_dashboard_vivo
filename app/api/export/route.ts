@@ -21,6 +21,8 @@ export async function GET(request: Request) {
   const header = [
     "fecha",
     "concesionaria",
+    "area",
+    "area_descripcion",
     "proceso",
     "proceso_descripcion",
     "responsable_nombre",
@@ -31,18 +33,22 @@ export async function GET(request: Request) {
 
   const rows: string[][] = [];
   for (const s of submissions) {
-    for (const proc of s.payload.procesos) {
-      for (const responsable of proc.responsables) {
-        rows.push([
-          s.created_at,
-          s.payload.concesionaria,
-          proc.nombre,
-          proc.descripcion,
-          responsable.nombre,
-          responsable.rol,
-          responsable.mail,
-          responsable.telefono,
-        ]);
+    for (const area of s.payload.areas) {
+      for (const proc of area.procesos) {
+        for (const responsable of proc.responsables) {
+          rows.push([
+            s.created_at,
+            s.payload.concesionaria,
+            area.nombre,
+            area.descripcion,
+            proc.nombre,
+            proc.descripcion,
+            responsable.nombre,
+            responsable.rol,
+            responsable.mail,
+            responsable.telefono,
+          ]);
+        }
       }
     }
   }

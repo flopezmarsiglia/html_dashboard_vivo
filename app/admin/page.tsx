@@ -13,13 +13,18 @@ function formatDate(iso: string) {
 export default async function AdminPage() {
   const submissions = await listSubmissions();
 
+  const totalAreas = submissions.reduce((acc, s) => acc + s.payload.areas.length, 0);
   const totalProcesses = submissions.reduce(
-    (acc, s) => acc + s.payload.procesos.length,
+    (acc, s) => acc + s.payload.areas.reduce((a, area) => a + area.procesos.length, 0),
     0
   );
   const totalPeople = submissions.reduce(
     (acc, s) =>
-      acc + s.payload.procesos.reduce((a, p) => a + p.responsables.length, 0),
+      acc +
+      s.payload.areas.reduce(
+        (a, area) => a + area.procesos.reduce((b, p) => b + p.responsables.length, 0),
+        0
+      ),
     0
   );
 
@@ -36,6 +41,9 @@ export default async function AdminPage() {
           <div className="mt-4 flex flex-wrap gap-3 text-sm">
             <span className="rounded-full bg-zinc-100 px-3 py-1 font-medium text-zinc-700">
               {submissions.length} respuesta(s)
+            </span>
+            <span className="rounded-full bg-zinc-100 px-3 py-1 font-medium text-zinc-700">
+              {totalAreas} área(s)
             </span>
             <span className="rounded-full bg-zinc-100 px-3 py-1 font-medium text-zinc-700">
               {totalProcesses} proceso(s) cargados
@@ -87,32 +95,48 @@ export default async function AdminPage() {
               </div>
 
               <div className="mt-4 flex flex-col gap-4">
-                {s.payload.procesos.map((proc, i) => (
+                {s.payload.areas.map((area, i) => (
                   <div
                     key={i}
-                    className="rounded-xl border border-zinc-200 p-4"
+                    className="rounded-xl border border-zinc-300 bg-zinc-50/60 p-4"
                   >
-                    <h3 className="text-sm font-semibold text-zinc-800">
-                      {proc.nombre}
+                    <h3 className="text-sm font-bold text-zinc-900">
+                      {area.nombre}
                     </h3>
-                    {proc.descripcion && (
-                      <p className="mt-1 text-xs text-zinc-500">
-                        {proc.descripcion}
-                      </p>
+                    {area.descripcion && (
+                      <p className="mt-1 text-xs text-zinc-500">{area.descripcion}</p>
                     )}
-                    <ul className="mt-3 flex flex-col gap-2">
-                      {proc.responsables.map((r, j) => (
-                        <li
+
+                    <div className="mt-3 flex flex-col gap-3">
+                      {area.procesos.map((proc, j) => (
+                        <div
                           key={j}
-                          className="rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-700"
+                          className="rounded-lg border border-zinc-200 bg-white p-3"
                         >
-                          <span className="font-medium">{r.nombre}</span>
-                          {r.rol && ` — ${r.rol}`}
-                          <br />
-                          {[r.mail, r.telefono].filter(Boolean).join(" · ")}
-                        </li>
+                          <h4 className="text-sm font-semibold text-zinc-800">
+                            {proc.nombre}
+                          </h4>
+                          {proc.descripcion && (
+                            <p className="mt-1 text-xs text-zinc-500">
+                              {proc.descripcion}
+                            </p>
+                          )}
+                          <ul className="mt-2 flex flex-col gap-2">
+                            {proc.responsables.map((r, k) => (
+                              <li
+                                key={k}
+                                className="rounded-lg bg-zinc-50 px-3 py-2 text-xs text-zinc-700"
+                              >
+                                <span className="font-medium">{r.nombre}</span>
+                                {r.rol && ` — ${r.rol}`}
+                                <br />
+                                {[r.mail, r.telefono].filter(Boolean).join(" · ")}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   </div>
                 ))}
               </div>

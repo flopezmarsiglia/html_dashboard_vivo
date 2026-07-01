@@ -9,17 +9,24 @@ function validatePayload(body: unknown): body is SubmissionPayload {
   if (!body || typeof body !== "object") return false;
   const b = body as Record<string, unknown>;
 
-  if (!Array.isArray(b.procesos) || b.procesos.length === 0) return false;
+  if (!Array.isArray(b.areas) || b.areas.length === 0) return false;
 
-  for (const proc of b.procesos) {
-    if (!proc || typeof proc !== "object") return false;
-    const p = proc as Record<string, unknown>;
-    if (!isNonEmptyString(p.nombre)) return false;
-    if (!Array.isArray(p.responsables) || p.responsables.length === 0) return false;
-    for (const responsable of p.responsables) {
-      if (!responsable || typeof responsable !== "object") return false;
-      const r = responsable as Record<string, unknown>;
-      if (!isNonEmptyString(r.nombre)) return false;
+  for (const area of b.areas) {
+    if (!area || typeof area !== "object") return false;
+    const a = area as Record<string, unknown>;
+    if (!isNonEmptyString(a.nombre)) return false;
+    if (!Array.isArray(a.procesos) || a.procesos.length === 0) return false;
+
+    for (const proc of a.procesos) {
+      if (!proc || typeof proc !== "object") return false;
+      const p = proc as Record<string, unknown>;
+      if (!isNonEmptyString(p.nombre)) return false;
+      if (!Array.isArray(p.responsables) || p.responsables.length === 0) return false;
+      for (const responsable of p.responsables) {
+        if (!responsable || typeof responsable !== "object") return false;
+        const r = responsable as Record<string, unknown>;
+        if (!isNonEmptyString(r.nombre)) return false;
+      }
     }
   }
 
@@ -38,7 +45,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "Datos incompletos. Cada proceso necesita un nombre y al menos un responsable con nombre.",
+          "Datos incompletos. Cada área necesita un nombre, al menos un proceso con nombre y al menos un responsable con nombre.",
       },
       { status: 400 }
     );

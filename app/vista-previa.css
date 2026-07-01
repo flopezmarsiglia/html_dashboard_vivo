@@ -68,15 +68,22 @@
 }
 .preview-page .arch-node.db svg{width:16px;height:16px;flex:none;}
 
+/* ---------- Diagrama completo (mock + flecha + base de datos + árbol) ----------
+   Todo el diagrama vive en un único bloque "shrink-to-fit" (inline-block) que se
+   centra como unidad. Así, si el árbol es más ancho que la pantalla y hay que
+   scrollear, el mock, la flecha, la base de datos y el árbol se mueven juntos y
+   quedan siempre alineados entre sí (en vez de centrarse cada uno por separado). */
+.preview-page .arch-diagram-scroll{overflow-x:auto;padding-bottom:10px;text-align:center;}
+.preview-page .arch-diagram-inner{display:inline-block;text-align:left;min-width:100%;}
+
 /* ---------- Árbol (CSS puro, tipo organigrama) ---------- */
 .preview-page .arch-scroll-hint{display:none;text-align:center;font-size:11.5px;color:var(--muted-soft);margin-top:8px;}
-.preview-page .arch-tree-wrap{margin-top:0;overflow-x:auto;padding-bottom:10px;}
 .preview-page .arch-tree,
 .preview-page .arch-tree ul,
 .preview-page .arch-tree li{
   list-style:none;margin:0;padding:0;position:relative;
 }
-.preview-page .arch-tree{display:flex;justify-content:center;min-width:min-content;}
+.preview-page .arch-tree{display:flex;justify-content:center;}
 .preview-page .arch-tree ul{display:flex;padding-top:26px;}
 .preview-page .arch-tree li{
   display:flex;flex-direction:column;align-items:center;

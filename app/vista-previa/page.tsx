@@ -10,6 +10,7 @@ const AREAS = [
   { nombre: "Postventa / Taller", procesos: ["Turnos de service", "Repuestos"] },
   { nombre: "Administración", procesos: ["Facturación", "Cobranzas"] },
   { nombre: "Gestoría", procesos: ["Patentamientos", "Transferencias"] },
+  { nombre: "Marketing", procesos: ["Campañas y pauta", "Redes sociales"] },
 ];
 
 function IconArrowUp() {
@@ -71,45 +72,47 @@ export default function VistaPreviaPage() {
           </div>
         </div>
 
-        <div className="arch-dash-mock">
-          <div className="arch-dash-head">
-            <span className="dot" />
-            <span className="t">Tu Dashboard en vivo</span>
-          </div>
-          <div className="arch-ghost-row">
-            <div className="arch-ghost-kpi"><div className="b1" /><div className="b2" /></div>
-            <div className="arch-ghost-kpi"><div className="b1" /><div className="b2" /></div>
-            <div className="arch-ghost-kpi"><div className="b1" /><div className="b2" /></div>
-          </div>
-        </div>
+        <div className="arch-diagram-scroll">
+          <div className="arch-diagram-inner">
+            <div className="arch-dash-mock">
+              <div className="arch-dash-head">
+                <span className="dot" />
+                <span className="t">Tu Dashboard en vivo</span>
+              </div>
+              <div className="arch-ghost-row">
+                <div className="arch-ghost-kpi"><div className="b1" /><div className="b2" /></div>
+                <div className="arch-ghost-kpi"><div className="b1" /><div className="b2" /></div>
+                <div className="arch-ghost-kpi"><div className="b1" /><div className="b2" /></div>
+              </div>
+            </div>
 
-        <div className="arch-connector">
-          <div className="circle"><IconArrowUp /></div>
-        </div>
+            <div className="arch-connector">
+              <div className="circle"><IconArrowUp /></div>
+            </div>
 
-        <div className="arch-db-row">
-          <div className="arch-node db">
-            <IconDatabase />
-            Base de datos
-          </div>
-        </div>
+            <div className="arch-db-row">
+              <div className="arch-node db">
+                <IconDatabase />
+                Base de datos
+              </div>
+            </div>
 
-        <div className="arch-tree-wrap">
-          <div className="arch-tree">
-            <ul>
-              {AREAS.map((area) => (
-                <li key={area.nombre}>
-                  <div className="arch-node area">{area.nombre}</div>
-                  <ul>
-                    {area.procesos.map((proc) => (
-                      <li key={proc}>
-                        <div className="arch-node process">{proc}</div>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
+            <div className="arch-tree">
+              <ul>
+                {AREAS.map((area) => (
+                  <li key={area.nombre}>
+                    <div className="arch-node area">{area.nombre}</div>
+                    <ul>
+                      {area.procesos.map((proc) => (
+                        <li key={proc}>
+                          <div className="arch-node process">{proc}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
         <p className="arch-scroll-hint">Deslizá hacia los costados para ver el árbol completo →</p>

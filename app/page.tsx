@@ -20,6 +20,13 @@ type Proceso = {
   responsables: Responsable[];
 };
 
+type Area = {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  procesos: Proceso[];
+};
+
 const DEALERSHIP_NAME = process.env.NEXT_PUBLIC_DEALERSHIP_NAME || "Long";
 
 function newResponsable(): Responsable {
@@ -32,6 +39,15 @@ function newProceso(): Proceso {
     nombre: "",
     descripcion: "",
     responsables: [newResponsable()],
+  };
+}
+
+function newArea(): Area {
+  return {
+    id: crypto.randomUUID(),
+    nombre: "",
+    descripcion: "",
+    procesos: [newProceso()],
   };
 }
 
@@ -75,15 +91,17 @@ function IconSend() {
 }
 
 export default function Home() {
-  const [procesos, setProcesos] = useState<Proceso[]>([]);
+  const [areas, setAreas] = useState<Area[]>([]);
   const [toastMsg, setToastMsg] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [sending, setSending] = useState(false);
 
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const nameInputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+  const areaNameInputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+  const procesoNameInputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
   const responsableInputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
-  const addProcWrapRef = useRef<HTMLDivElement>(null);
+  const addAreaWrapRef = useRef<HTMLDivElement>(null);
+  const pendingAreaFocus = useRef<string | null>(null);
   const pendingProcesoFocus = useRef<string | null>(null);
   const pendingResponsableFocus = useRef<string | null>(null);
 
@@ -95,11 +113,16 @@ export default function Home() {
   }
 
   useEffect(() => {
+    if (pendingAreaFocus.current) {
+      const el = areaNameInputRefs.current.get(pendingAreaFocus.current);
+      pendingAreaFocus.current = null;
+      el?.focus();
+      addAreaWrapRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     if (pendingProcesoFocus.current) {
-      const el = nameInputRefs.current.get(pendingProcesoFocus.current);
+      const el = procesoNameInputRefs.current.get(pendingProcesoFocus.current);
       pendingProcesoFocus.current = null;
       el?.focus();
-      addProcWrapRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     if (pendingResponsableFocus.current) {
       const el = responsableInputRefs.current.get(pendingResponsableFocus.current);
@@ -108,52 +131,112 @@ export default function Home() {
     }
   });
 
-  function addProceso() {
+  function addArea() {
+    const a = newArea();
+    setAreas((prev) => [...prev, a]);
+    pendingAreaFocus.current = a.id;
+  }
+
+  function deleteArea(id: string) {
+    setAreas((prev) => prev.filter((a) => a.id !== id));
+  }
+
+  function updateArea(id: string, field: "nombre" | "descripcion", value: string) {
+    setAreas((prev) => prev.map((a) => (a.id === id ? { ...a, [field]: value } : a)));
+  }
+
+  function addProceso(areaId: string) {
     const p = newProceso();
-    setProcesos((prev) => [...prev, p]);
-    pendingProcesoFocus.current = p.id;
-  }
-
-  function deleteProceso(id: string) {
-    setProcesos((prev) => prev.filter((p) => p.id !== id));
-  }
-
-  function addResponsable(procesoId: string) {
-    const r = newResponsable();
-    setProcesos((prev) =>
-      prev.map((p) => (p.id === procesoId ? { ...p, responsables: [...p.responsables, r] } : p))
+    setAreas((prev) =>
+      prev.map((a) => (a.id === areaId ? { ...a, procesos: [...a.procesos, p] } : a))
     );
-    pendingResponsableFocus.current = `${procesoId}:${r.id}`;
+    pendingProcesoFocus.current = `${areaId}:${p.id}`;
   }
 
-  function deleteResponsable(procesoId: string, responsableId: string) {
-    setProcesos((prev) =>
-      prev.map((p) =>
-        p.id !== procesoId
-          ? p
-          : { ...p, responsables: p.responsables.filter((r) => r.id !== responsableId) }
+  function deleteProceso(areaId: string, procesoId: string) {
+    setAreas((prev) =>
+      prev.map((a) =>
+        a.id !== areaId ? a : { ...a, procesos: a.procesos.filter((p) => p.id !== procesoId) }
       )
     );
   }
 
-  function updateProceso(id: string, field: "nombre" | "descripcion", value: string) {
-    setProcesos((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  function updateProceso(
+    areaId: string,
+    procesoId: string,
+    field: "nombre" | "descripcion",
+    value: string
+  ) {
+    setAreas((prev) =>
+      prev.map((a) =>
+        a.id !== areaId
+          ? a
+          : {
+              ...a,
+              procesos: a.procesos.map((p) =>
+                p.id === procesoId ? { ...p, [field]: value } : p
+              ),
+            }
+      )
+    );
+  }
+
+  function addResponsable(areaId: string, procesoId: string) {
+    const r = newResponsable();
+    setAreas((prev) =>
+      prev.map((a) =>
+        a.id !== areaId
+          ? a
+          : {
+              ...a,
+              procesos: a.procesos.map((p) =>
+                p.id === procesoId ? { ...p, responsables: [...p.responsables, r] } : p
+              ),
+            }
+      )
+    );
+    pendingResponsableFocus.current = `${areaId}:${procesoId}:${r.id}`;
+  }
+
+  function deleteResponsable(areaId: string, procesoId: string, responsableId: string) {
+    setAreas((prev) =>
+      prev.map((a) =>
+        a.id !== areaId
+          ? a
+          : {
+              ...a,
+              procesos: a.procesos.map((p) =>
+                p.id !== procesoId
+                  ? p
+                  : { ...p, responsables: p.responsables.filter((r) => r.id !== responsableId) }
+              ),
+            }
+      )
+    );
   }
 
   function updateResponsable(
+    areaId: string,
     procesoId: string,
     responsableId: string,
     field: keyof Omit<Responsable, "id">,
     value: string
   ) {
-    setProcesos((prev) =>
-      prev.map((p) =>
-        p.id !== procesoId
-          ? p
+    setAreas((prev) =>
+      prev.map((a) =>
+        a.id !== areaId
+          ? a
           : {
-              ...p,
-              responsables: p.responsables.map((r) =>
-                r.id === responsableId ? { ...r, [field]: value } : r
+              ...a,
+              procesos: a.procesos.map((p) =>
+                p.id !== procesoId
+                  ? p
+                  : {
+                      ...p,
+                      responsables: p.responsables.map((r) =>
+                        r.id === responsableId ? { ...r, [field]: value } : r
+                      ),
+                    }
               ),
             }
       )
@@ -166,14 +249,18 @@ export default function Home() {
       generado_por: "Loopers",
       fecha: new Date().toISOString(),
       concesionaria: DEALERSHIP_NAME,
-      procesos: procesos.map((p) => ({
-        nombre: p.nombre.trim(),
-        descripcion: p.descripcion.trim(),
-        responsables: p.responsables.map((r) => ({
-          nombre: r.nombre.trim(),
-          mail: r.mail.trim(),
-          telefono: r.telefono.trim(),
-          rol: r.rol.trim(),
+      areas: areas.map((a) => ({
+        nombre: a.nombre.trim(),
+        descripcion: a.descripcion.trim(),
+        procesos: a.procesos.map((p) => ({
+          nombre: p.nombre.trim(),
+          descripcion: p.descripcion.trim(),
+          responsables: p.responsables.map((r) => ({
+            nombre: r.nombre.trim(),
+            mail: r.mail.trim(),
+            telefono: r.telefono.trim(),
+            rol: r.rol.trim(),
+          })),
         })),
       })),
     };
@@ -181,10 +268,15 @@ export default function Home() {
 
   async function handleSubmit() {
     const data = buildData();
-    const validProcesos = data.procesos.filter((p) => p.nombre && p.responsables.some((r) => r.nombre));
+    const validAreas = data.areas
+      .map((a) => ({
+        ...a,
+        procesos: a.procesos.filter((p) => p.nombre && p.responsables.some((r) => r.nombre)),
+      }))
+      .filter((a) => a.nombre && a.procesos.length > 0);
 
-    if (validProcesos.length === 0) {
-      showToast("Agregá al menos un proceso con nombre y un responsable.");
+    if (validAreas.length === 0) {
+      showToast("Agregá al menos un área con un proceso y un responsable con nombre.");
       return;
     }
 
@@ -193,20 +285,22 @@ export default function Home() {
       const res = await fetch("/api/submissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, procesos: validProcesos }),
+        body: JSON.stringify({ ...data, areas: validAreas }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error || "No se pudo enviar el formulario.");
       }
       showToast("¡Gracias! Tus respuestas fueron guardadas.");
-      setProcesos([]);
+      setAreas([]);
     } catch (err) {
       showToast(err instanceof Error ? err.message : "No se pudo enviar el formulario.");
     } finally {
       setSending(false);
     }
   }
+
+  const totalProcesos = areas.reduce((acc, a) => acc + a.procesos.length, 0);
 
   return (
     <div className="relevamiento-page">
@@ -252,13 +346,16 @@ export default function Home() {
               </div>
               <div className="counter-pill">
                 <IconArrowUp />
-                <span><b>{procesos.length}</b> procesos conectados</span>
+                <span>
+                  <b>{areas.length}</b> {areas.length === 1 ? "área" : "áreas"} ·{" "}
+                  <b>{totalProcesos}</b> {totalProcesos === 1 ? "proceso" : "procesos"} conectados
+                </span>
               </div>
             </div>
 
-            <div id="proc-list">
-              {procesos.map((p, i) => (
-                <div key={p.id}>
+            <div id="area-list">
+              {areas.map((a, i) => (
+                <div key={a.id}>
                   <div className="conn" aria-hidden="true">
                     <div className="arrow"><IconArrowUp /></div>
                   </div>
@@ -268,87 +365,149 @@ export default function Home() {
                       <div className="proc-fields">
                         <input
                           ref={(el) => {
-                            if (el) nameInputRefs.current.set(p.id, el);
-                            else nameInputRefs.current.delete(p.id);
+                            if (el) areaNameInputRefs.current.set(a.id, el);
+                            else areaNameInputRefs.current.delete(a.id);
                           }}
                           className="name-input"
                           type="text"
-                          placeholder="Nombre del proceso (ej: cómo lo llamás internamente)"
-                          value={p.nombre}
-                          onChange={(e) => updateProceso(p.id, "nombre", e.target.value)}
+                          placeholder="Nombre del área (ej: Ventas, Postventa, Administración, Gestoría...)"
+                          value={a.nombre}
+                          onChange={(e) => updateArea(a.id, "nombre", e.target.value)}
                         />
                         <textarea
-                          placeholder="¿Qué pasa en este proceso o qué te gustaría ver en el dashboard? (opcional)"
-                          value={p.descripcion}
-                          onChange={(e) => updateProceso(p.id, "descripcion", e.target.value)}
+                          placeholder="¿Qué incluye esta área? (opcional)"
+                          value={a.descripcion}
+                          onChange={(e) => updateArea(a.id, "descripcion", e.target.value)}
                         />
                       </div>
-                      <button className="del-proc" title="Eliminar proceso" onClick={() => deleteProceso(p.id)}>
+                      <button className="del-proc" title="Eliminar área" onClick={() => deleteArea(a.id)}>
                         <IconTrash />
                       </button>
                     </div>
-                    <div className="resp-block">
-                      <div className="resp-head">
-                        Responsables <span className="count">· {p.responsables.length}</span>
+
+                    <div className="procesos-block">
+                      <div className="procesos-head">
+                        Procesos de esta área <span className="count">· {a.procesos.length}</span>
                       </div>
-                      {p.responsables.length === 0 ? (
-                        <div className="resp-empty">Todavía no agregaste responsables.</div>
+
+                      {a.procesos.length === 0 ? (
+                        <div className="resp-empty">Todavía no agregaste procesos.</div>
                       ) : (
-                        p.responsables.map((r) => {
-                          const mailInvalid = r.mail !== "" && !EMAIL_RE.test(r.mail);
-                          return (
-                            <div className="resp-row" key={r.id}>
-                              <input
-                                ref={(el) => {
-                                  const key = `${p.id}:${r.id}`;
-                                  if (el) responsableInputRefs.current.set(key, el);
-                                  else responsableInputRefs.current.delete(key);
-                                }}
-                                type="text"
-                                placeholder="Nombre y apellido"
-                                value={r.nombre}
-                                onChange={(e) => updateResponsable(p.id, r.id, "nombre", e.target.value)}
-                              />
-                              <input
-                                type="email"
-                                placeholder="Mail"
-                                className={mailInvalid ? "warn" : ""}
-                                value={r.mail}
-                                onChange={(e) => updateResponsable(p.id, r.id, "mail", e.target.value)}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Teléfono"
-                                value={r.telefono}
-                                onChange={(e) => updateResponsable(p.id, r.id, "telefono", e.target.value)}
-                              />
-                              <input
-                                type="text"
-                                placeholder="Rol / puesto"
-                                value={r.rol}
-                                onChange={(e) => updateResponsable(p.id, r.id, "rol", e.target.value)}
-                              />
-                              <button className="del-resp" title="Quitar responsable" onClick={() => deleteResponsable(p.id, r.id)}>
-                                <IconX />
+                        a.procesos.map((p, j) => (
+                          <div className="proceso-card" key={p.id}>
+                            <div className="proceso-top">
+                              <div className="proceso-index">{j + 1}</div>
+                              <div className="proceso-fields">
+                                <input
+                                  ref={(el) => {
+                                    const key = `${a.id}:${p.id}`;
+                                    if (el) procesoNameInputRefs.current.set(key, el);
+                                    else procesoNameInputRefs.current.delete(key);
+                                  }}
+                                  className="proceso-name-input"
+                                  type="text"
+                                  placeholder="Nombre del proceso (ej: Ventas 0km)"
+                                  value={p.nombre}
+                                  onChange={(e) => updateProceso(a.id, p.id, "nombre", e.target.value)}
+                                />
+                                <textarea
+                                  placeholder="¿Qué pasa en este proceso o qué te gustaría ver en el dashboard? (opcional)"
+                                  value={p.descripcion}
+                                  onChange={(e) => updateProceso(a.id, p.id, "descripcion", e.target.value)}
+                                />
+                              </div>
+                              <button
+                                className="del-proc"
+                                title="Eliminar proceso"
+                                onClick={() => deleteProceso(a.id, p.id)}
+                              >
+                                <IconTrash />
                               </button>
                             </div>
-                          );
-                        })
+
+                            <div className="resp-block">
+                              <div className="resp-head">
+                                Responsables <span className="count">· {p.responsables.length}</span>
+                              </div>
+                              {p.responsables.length === 0 ? (
+                                <div className="resp-empty">Todavía no agregaste responsables.</div>
+                              ) : (
+                                p.responsables.map((r) => {
+                                  const mailInvalid = r.mail !== "" && !EMAIL_RE.test(r.mail);
+                                  return (
+                                    <div className="resp-row" key={r.id}>
+                                      <input
+                                        ref={(el) => {
+                                          const key = `${a.id}:${p.id}:${r.id}`;
+                                          if (el) responsableInputRefs.current.set(key, el);
+                                          else responsableInputRefs.current.delete(key);
+                                        }}
+                                        type="text"
+                                        placeholder="Nombre y apellido"
+                                        value={r.nombre}
+                                        onChange={(e) =>
+                                          updateResponsable(a.id, p.id, r.id, "nombre", e.target.value)
+                                        }
+                                      />
+                                      <input
+                                        type="email"
+                                        placeholder="Mail"
+                                        className={mailInvalid ? "warn" : ""}
+                                        value={r.mail}
+                                        onChange={(e) =>
+                                          updateResponsable(a.id, p.id, r.id, "mail", e.target.value)
+                                        }
+                                      />
+                                      <input
+                                        type="text"
+                                        placeholder="Teléfono"
+                                        value={r.telefono}
+                                        onChange={(e) =>
+                                          updateResponsable(a.id, p.id, r.id, "telefono", e.target.value)
+                                        }
+                                      />
+                                      <input
+                                        type="text"
+                                        placeholder="Rol / puesto"
+                                        value={r.rol}
+                                        onChange={(e) =>
+                                          updateResponsable(a.id, p.id, r.id, "rol", e.target.value)
+                                        }
+                                      />
+                                      <button
+                                        className="del-resp"
+                                        title="Quitar responsable"
+                                        onClick={() => deleteResponsable(a.id, p.id, r.id)}
+                                      >
+                                        <IconX />
+                                      </button>
+                                    </div>
+                                  );
+                                })
+                              )}
+                              <button className="add-resp" onClick={() => addResponsable(a.id, p.id)}>
+                                <IconPlus />
+                                Agregar responsable
+                              </button>
+                            </div>
+                          </div>
+                        ))
                       )}
-                      <button className="add-resp" onClick={() => addResponsable(p.id)}>
+
+                      <button className="add-resp" onClick={() => addProceso(a.id)}>
                         <IconPlus />
-                        Agregar responsable
+                        Agregar proceso
                       </button>
                     </div>
                   </div>
                 </div>
               ))}
-              {procesos.length === 0 && (
+              {areas.length === 0 && (
                 <div className="conn" style={{ height: "auto" }}>
                   <div className="empty" style={{ margin: "20px 0 4px" }}>
-                    <b>Acá van a aparecer tus procesos.</b>
+                    <b>Acá van a aparecer tus áreas.</b>
                     <br />
-                    Tocá &ldquo;Agregar proceso&rdquo; para empezar.
+                    Tocá &ldquo;Agregar área&rdquo; para empezar.
                   </div>
                 </div>
               )}
@@ -358,10 +517,10 @@ export default function Home() {
               <div className="arrow"><IconArrowUp /></div>
             </div>
 
-            <div className="add-proc-wrap" ref={addProcWrapRef}>
-              <button className="add-proc" onClick={addProceso}>
+            <div className="add-proc-wrap" ref={addAreaWrapRef}>
+              <button className="add-proc" onClick={addArea}>
                 <IconPlus />
-                Agregar proceso
+                Agregar área
               </button>
             </div>
           </div>
