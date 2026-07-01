@@ -63,21 +63,6 @@ function IconTrash() {
     </svg>
   );
 }
-function IconDownload() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-    </svg>
-  );
-}
-function IconClipboard() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="9" y="9" width="13" height="13" rx="2" />
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-    </svg>
-  );
-}
 function IconSend() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -97,7 +82,6 @@ export default function Home() {
   const nameInputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
   const responsableInputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
   const addProcWrapRef = useRef<HTMLDivElement>(null);
-  const importInputRef = useRef<HTMLInputElement>(null);
   const pendingProcesoFocus = useRef<string | null>(null);
   const pendingResponsableFocus = useRef<string | null>(null);
 
@@ -191,108 +175,6 @@ export default function Home() {
         })),
       })),
     };
-  }
-
-  function buildSummary() {
-    const d = buildData();
-    const lines: string[] = [];
-    lines.push("RELEVAMIENTO DE PROCESOS — DASHBOARD");
-    lines.push("Concesionaria: " + d.concesionaria);
-    lines.push("Fecha: " + new Date(d.fecha).toLocaleDateString("es-AR"));
-    lines.push("");
-    if (d.procesos.length === 0) {
-      lines.push("(Sin procesos cargados)");
-    }
-    d.procesos.forEach((p, i) => {
-      lines.push(`PROCESO ${i + 1}: ${p.nombre || "(sin nombre)"}`);
-      if (p.descripcion) lines.push("  Descripción: " + p.descripcion);
-      lines.push("  Responsables:");
-      if (p.responsables.length === 0) {
-        lines.push("    (sin responsables)");
-      } else {
-        p.responsables.forEach((r) => {
-          const parts = [r.nombre || "(sin nombre)"];
-          if (r.rol) parts.push(r.rol);
-          if (r.mail) parts.push(r.mail);
-          if (r.telefono) parts.push(r.telefono);
-          lines.push("    - " + parts.join(" · "));
-        });
-      }
-      lines.push("");
-    });
-    return lines.join("\n");
-  }
-
-  function handleDownload() {
-    const data = buildData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    const slug = DEALERSHIP_NAME.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    a.download = `relevamiento-procesos-${slug || "concesionaria"}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast("Archivo descargado");
-  }
-
-  async function handleCopy() {
-    const text = buildSummary();
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast("Resumen copiado al portapapeles");
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      try {
-        document.execCommand("copy");
-        showToast("Resumen copiado");
-      } catch {
-        showToast("No se pudo copiar automáticamente");
-      }
-      document.body.removeChild(ta);
-    }
-  }
-
-  function handleImportClick() {
-    importInputRef.current?.click();
-  }
-
-  function handleImportChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const d = JSON.parse(reader.result as string);
-        const loaded: Proceso[] = (d.procesos || []).map(
-          (p: { nombre?: string; descripcion?: string; responsables?: Partial<Responsable>[] }) => ({
-            id: crypto.randomUUID(),
-            nombre: p.nombre || "",
-            descripcion: p.descripcion || "",
-            responsables: (p.responsables || []).map((r) => ({
-              id: crypto.randomUUID(),
-              nombre: r.nombre || "",
-              mail: r.mail || "",
-              telefono: r.telefono || "",
-              rol: r.rol || "",
-            })),
-          })
-        );
-        setProcesos(loaded);
-        showToast("Datos cargados · podés seguir completando");
-      } catch {
-        showToast("No se pudo leer el archivo");
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
   }
 
   async function handleSubmit() {
@@ -488,21 +370,8 @@ export default function Home() {
         <div className="wrap">
           <div className="actions">
             <div className="summary-note">
-              Cuando termines, <b>enviá tus respuestas</b>. También podés descargar una copia o cargar un guardado.
+              Cuando termines, <b>enviá tus respuestas</b>.
             </div>
-            <input ref={importInputRef} type="file" accept=".json,application/json" onChange={handleImportChange} />
-            <button className="btn ghost" onClick={handleImportClick}>
-              <IconDownload />
-              Cargar guardado
-            </button>
-            <button className="btn ghost" onClick={handleCopy}>
-              <IconClipboard />
-              Copiar resumen
-            </button>
-            <button className="btn ghost" onClick={handleDownload}>
-              <IconDownload />
-              Descargar copia
-            </button>
             <button className="btn primary" onClick={handleSubmit} disabled={sending}>
               <IconSend />
               {sending ? "Enviando..." : "Enviar respuestas"}
