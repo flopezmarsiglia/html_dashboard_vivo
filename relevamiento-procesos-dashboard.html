@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relevamiento de procesos · Loopers</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --blue:#2F6FE0;
+    --blue-light:#62A0DC;
+    --ink:#181B22;
+    --bg:#F1F3F6;
+    --card:#FFFFFF;
+    --line:#E3E7ED;
+    --line-strong:#D2D8E0;
+    --muted:#6B7280;
+    --muted-soft:#9AA2AE;
+    --blue-wash:#EFF4FC;
+    --danger:#C2473B;
+    --ok:#2E8B57;
+    --radius:14px;
+    --shadow:0 1px 2px rgba(24,27,34,.04), 0 8px 24px rgba(24,27,34,.05);
+    --shadow-soft:0 1px 2px rgba(24,27,34,.03);
+    --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--font);
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    padding:0 0 80px;
+  }
+
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px;}
+
+  /* ---------- Header ---------- */
+  .topbar{
+    background:var(--card);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .wrap{display:flex;align-items:center;gap:12px;padding-top:18px;padding-bottom:18px;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo svg{display:block;height:30px;width:auto;}
+  .logo .word{font-weight:800;font-size:22px;letter-spacing:-.03em;color:var(--ink);}
+  .topbar .tag{
+    margin-left:auto;font-size:12.5px;color:var(--muted);font-weight:500;
+    border-left:1px solid var(--line);padding-left:12px;
+  }
+
+  /* ---------- Intro ---------- */
+  .intro{padding-top:38px;}
+  .eyebrow{
+    font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--blue);margin-bottom:12px;
+  }
+  h1{font-size:30px;line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 14px;}
+  .lead{font-size:16px;color:#3A4150;max-width:600px;margin:0 0 4px;}
+  .lead strong{color:var(--ink);font-weight:600;}
+
+  /* ---------- Meta ---------- */
+  .meta{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow-soft);padding:18px;margin-top:26px;
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12.5px;font-weight:600;color:var(--muted);}
+  .field .opt{font-weight:400;color:var(--muted-soft);}
+  input,textarea{
+    font-family:var(--font);font-size:14.5px;color:var(--ink);
+    background:#FBFCFD;border:1px solid var(--line-strong);border-radius:9px;
+    padding:9px 11px;width:100%;transition:border-color .12s,box-shadow .12s,background .12s;
+  }
+  input::placeholder,textarea::placeholder{color:var(--muted-soft);}
+  input:focus,textarea:focus{
+    outline:none;border-color:var(--blue);background:#fff;
+    box-shadow:0 0 0 3px rgba(47,111,224,.12);
+  }
+  input.warn{border-color:#E5B36A;background:#FFFBF3;}
+
+  /* ---------- Flow / spine ---------- */
+  .flow{position:relative;margin-top:26px;}
+  .page-title{padding-top:40px;}
+  .page-title h1{margin:0;}
+  .flow::before{
+    content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
+    background:linear-gradient(var(--line-strong),var(--line-strong));
+    transform:translateX(-50%);z-index:0;
+  }
+  .flow-inner{position:relative;z-index:1;}
+
+  /* ---------- Fake dashboard ---------- */
+  .dash{
+    background:linear-gradient(180deg,#FAFBFD,#F4F6F9);
+    border:1px solid var(--line);border-radius:16px;
+    box-shadow:var(--shadow);padding:16px 16px 18px;position:relative;overflow:hidden;
+    opacity:.96;
+  }
+  .dash .ghost-badge{
+    position:absolute;top:12px;right:12px;font-size:10.5px;font-weight:600;
+    letter-spacing:.04em;text-transform:uppercase;color:var(--muted-soft);
+    background:#fff;border:1px solid var(--line);border-radius:20px;padding:3px 9px;
+  }
+  .dash .dash-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+  .dash .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(46,139,87,.15);}
+  .dash .dash-head .t{font-size:13px;font-weight:600;color:#4A5160;}
+  .dash .dash-head .live{font-size:11px;color:var(--muted-soft);margin-left:auto;}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 11px;}
+  .kpi .bar{height:6px;border-radius:4px;background:#E7EBF1;margin-bottom:9px;width:60%;}
+  .kpi .num{height:13px;border-radius:4px;background:#DCE3EC;width:80%;margin-bottom:6px;}
+  .kpi .num.alt{background:var(--blue-wash);width:55%;}
+  .kpi .sub{height:7px;border-radius:4px;background:#EDF0F4;width:70%;}
+  .chartbox{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;height:104px;position:relative;overflow:hidden;}
+  .chartbox svg{position:absolute;inset:12px;width:calc(100% - 24px);height:calc(100% - 24px);}
+  .counter-pill{
+    display:inline-flex;align-items:center;gap:7px;margin-top:14px;
+    background:var(--blue-wash);border:1px solid #D7E5FA;border-radius:22px;
+    padding:6px 13px;font-size:12.5px;font-weight:600;color:var(--blue);
+  }
+  .counter-pill b{font-size:13.5px;}
+
+  /* ---------- Connector ---------- */
+  .conn{display:flex;justify-content:center;align-items:center;height:34px;position:relative;}
+  .conn .arrow{
+    width:26px;height:26px;border-radius:50%;background:#fff;
+    border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;
+    color:var(--blue-light);box-shadow:var(--shadow-soft);
+  }
+  .conn .arrow svg{width:13px;height:13px;}
+
+  /* ---------- Process card ---------- */
+  .proc{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);overflow:hidden;
+  }
+  .proc-top{
+    display:flex;align-items:flex-start;gap:12px;padding:16px 16px 0;
+  }
+  .proc-index{
+    flex:none;width:30px;height:30px;border-radius:9px;background:var(--blue);
+    color:#fff;font-weight:700;font-size:13.5px;display:flex;align-items:center;justify-content:center;
+    margin-top:2px;
+  }
+  .proc-fields{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px;}
+  .proc .name-input{font-size:16px;font-weight:600;padding:10px 12px;}
+  .proc textarea{resize:vertical;min-height:38px;font-size:14px;}
+  .del-proc{
+    flex:none;background:none;border:none;color:var(--muted-soft);cursor:pointer;
+    padding:6px;border-radius:7px;line-height:0;transition:background .12s,color .12s;margin-top:4px;
+  }
+  .del-proc:hover{background:#FBEBE9;color:var(--danger);}
+  .del-proc svg{width:16px;height:16px;}
+
+  .resp-block{margin:16px 0 0;padding:14px 16px 16px;border-top:1px solid var(--line);background:#FAFBFC;}
+  .resp-head{
+    font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:11px;display:flex;align-items:center;gap:8px;
+  }
+  .resp-head .count{color:var(--muted-soft);font-weight:500;letter-spacing:0;text-transform:none;}
+
+  .resp-row{
+    display:grid;grid-template-columns:1.3fr 1.6fr 1fr 1.1fr auto;gap:8px;align-items:center;
+    margin-bottom:8px;
+  }
+  .resp-row input{font-size:13.5px;padding:8px 10px;background:#fff;}
+  .del-resp{
+    flex:none;background:none;border:1px solid var(--line-strong);color:var(--muted-soft);
+    cursor:pointer;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    transition:all .12s;
+  }
+  .del-resp:hover{border-color:#E5B7B1;background:#FBEBE9;color:var(--danger);}
+  .del-resp svg{width:14px;height:14px;}
+
+  .add-resp{
+    margin-top:5px;background:none;border:1px dashed var(--line-strong);color:var(--blue);
+    font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;
+    padding:8px 12px;border-radius:9px;display:inline-flex;align-items:center;gap:6px;
+    transition:border-color .12s,background .12s;
+  }
+  .add-resp:hover{border-color:var(--blue);background:var(--blue-wash);}
+  .add-resp svg{width:14px;height:14px;}
+
+  .resp-empty{font-size:13px;color:var(--muted-soft);padding:2px 0 10px;}
+
+  /* ---------- Add process ---------- */
+  .add-proc-wrap{display:flex;justify-content:center;}
+  .add-proc{
+    background:var(--blue);color:#fff;border:none;font-family:var(--font);
+    font-size:14.5px;font-weight:600;cursor:pointer;padding:13px 22px;border-radius:12px;
+    display:inline-flex;align-items:center;gap:9px;box-shadow:0 6px 16px rgba(47,111,224,.22);
+    transition:transform .1s,box-shadow .12s,background .12s;
+  }
+  .add-proc:hover{background:#2A63C9;box-shadow:0 8px 20px rgba(47,111,224,.28);}
+  .add-proc:active{transform:translateY(1px);}
+  .add-proc svg{width:17px;height:17px;}
+
+  /* ---------- Empty state ---------- */
+  .empty{
+    text-align:center;color:var(--muted);font-size:14px;
+    background:#fff;border:1px dashed var(--line-strong);border-radius:var(--radius);
+    padding:22px;
+  }
+  .empty b{color:var(--ink);font-weight:600;}
+
+  /* ---------- Footer actions ---------- */
+  .actions-bar{
+    position:sticky;bottom:0;margin-top:40px;background:rgba(241,243,246,.85);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);
+  }
+  .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:14px 0;}
+  .actions .summary-note{font-size:12.5px;color:var(--muted);margin-right:auto;}
+  .actions .summary-note b{color:var(--ink);font-weight:600;}
+  .btn{
+    font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;
+    padding:11px 16px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;
+    border:1px solid var(--line-strong);background:#fff;color:var(--ink);transition:all .12s;
+  }
+  .btn:hover{border-color:var(--blue-light);background:#fff;}
+  .btn svg{width:15px;height:15px;}
+  .btn.ghost{background:transparent;}
+  .btn.primary{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .btn.primary:hover{background:#2A2F3B;}
+  .btn.primary svg{color:#fff;}
+  input[type=file]{display:none;}
+
+  .toast{
+    position:fixed;bottom:84px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;
+    padding:11px 18px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.18);
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  @media (max-width:640px){
+    h1{font-size:24px;}
+    .meta{grid-template-columns:1fr;}
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .resp-row{grid-template-columns:1fr 1fr;gap:7px;}
+    .resp-row .del-resp{grid-column:span 2;width:100%;}
+    .topbar .tag{display:none;}
+    .actions .summary-note{width:100%;margin-bottom:4px;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="wrap">
+      <div class="logo">
+        <svg viewBox="0 0 72 44" xmlns="http://www.w3.org/2000/svg" aria-label="Loopers">
+          <circle cx="22" cy="22" r="15" fill="none" stroke="#2F6FE0" stroke-width="6.5"/>
+          <circle cx="44" cy="22" r="15" fill="none" stroke="#62A0DC" stroke-width="6.5"/>
+        </svg>
+        <span class="word">loopers</span>
+      </div>
+      <div class="tag">Relevamiento de procesos</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="page-title">
+      <div class="eyebrow">Concesionaria Long</div>
+      <h1>Diseño de Dashboard en vivo</h1>
+    </div>
+    <div class="flow">
+      <div class="flow-inner" id="flow-inner">
+
+        <div class="dash">
+          <div class="ghost-badge">Vista ilustrativa</div>
+          <div class="dash-head">
+            <span class="dot"></span>
+            <span class="t">Dashboard de la concesionaria</span>
+            <span class="live">actualizado en vivo</span>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><div class="bar"></div><div class="num"></div><div class="sub"></div></div>
+            <div class="kpi"><div class="bar"></div><div class="num alt"></div><div class="sub"></div></div>
+            <div class="kpi"><div class="bar"></div><div class="num"></div><div class="sub"></div></div>
+            <div class="kpi"><div class="bar"></div><div class="num alt"></div><div class="sub"></div></div>
+          </div>
+          <div class="chartbox">
+            <svg viewBox="0 0 300 70" preserveAspectRatio="none">
+              <polyline points="0,55 40,48 80,52 120,34 160,40 200,22 240,28 300,12"
+                fill="none" stroke="#62A0DC" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="0,62 40,58 80,60 120,50 160,54 200,44 240,48 300,38"
+                fill="none" stroke="#D9E2EE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="counter-pill">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+            <span><b id="proc-counter">0</b> procesos conectados</span>
+          </div>
+        </div>
+
+        <div id="proc-list"></div>
+
+        <div class="conn" aria-hidden="true">
+          <div class="arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          </div>
+        </div>
+
+        <div class="add-proc-wrap">
+          <button class="add-proc" id="add-proc-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Agregar proceso
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="actions-bar">
+    <div class="wrap">
+      <div class="actions">
+        <div class="summary-note">Cuando termines, <b>descargá el archivo</b> y mandánoslo, o copiá el resumen.</div>
+        <input type="file" id="import-file" accept=".json,application/json">
+        <button class="btn ghost" id="import-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Cargar guardado
+        </button>
+        <button class="btn" id="copy-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copiar resumen
+        </button>
+        <button class="btn primary" id="download-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Descargar datos
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  let uid = 1;
+  const nextId = () => 'id' + (uid++);
+
+  let procesos = [];
+
+  const $ = (s, ctx=document) => ctx.querySelector(s);
+  const list = $('#proc-list');
+  const counterEl = $('#proc-counter');
+
+  function newResponsable(){
+    return { id:nextId(), nombre:'', mail:'', telefono:'', rol:'' };
+  }
+  function newProceso(){
+    return { id:nextId(), nombre:'', descripcion:'', responsables:[ newResponsable() ] };
+  }
+
+  const esc = (s) => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  // ---- Render ----
+  function render(){
+    list.innerHTML = '';
+    procesos.forEach((p, i) => {
+      const conn = document.createElement('div');
+      conn.className = 'conn';
+      conn.setAttribute('aria-hidden','true');
+      conn.innerHTML = '<div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></div>';
+      list.appendChild(conn);
+
+      const card = document.createElement('div');
+      card.className = 'proc';
+      card.dataset.pid = p.id;
+
+      let respHtml = '';
+      if(p.responsables.length === 0){
+        respHtml = '<div class="resp-empty">Todavía no agregaste responsables.</div>';
+      } else {
+        p.responsables.forEach(r => {
+          respHtml += `
+            <div class="resp-row" data-rid="${r.id}">
+              <input data-f="nombre" type="text" placeholder="Nombre y apellido" value="${esc(r.nombre)}">
+              <input data-f="mail" type="email" placeholder="Mail" value="${esc(r.mail)}">
+              <input data-f="telefono" type="text" placeholder="Teléfono" value="${esc(r.telefono)}">
+              <input data-f="rol" type="text" placeholder="Rol / puesto" value="${esc(r.rol)}">
+              <button class="del-resp" data-act="del-resp" title="Quitar responsable">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+              </button>
+            </div>`;
+        });
+      }
+
+      card.innerHTML = `
+        <div class="proc-top">
+          <div class="proc-index">${i+1}</div>
+          <div class="proc-fields">
+            <input data-f="nombre" class="name-input" type="text" placeholder="Nombre del proceso (ej: cómo lo llamás internamente)" value="${esc(p.nombre)}">
+            <textarea data-f="descripcion" placeholder="¿Qué pasa en este proceso o qué te gustaría ver en el dashboard? (opcional)">${esc(p.descripcion)}</textarea>
+          </div>
+          <button class="del-proc" data-act="del-proc" title="Eliminar proceso">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+          </button>
+        </div>
+        <div class="resp-block">
+          <div class="resp-head">Responsables <span class="count">· ${p.responsables.length}</span></div>
+          ${respHtml}
+          <button class="add-resp" data-act="add-resp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Agregar responsable
+          </button>
+        </div>`;
+      list.appendChild(card);
+    });
+
+    if(procesos.length === 0){
+      const empty = document.createElement('div');
+      empty.className = 'conn';
+      empty.style.height = 'auto';
+      empty.innerHTML = `<div class="empty" style="margin:20px 0 4px;"><b>Acá van a aparecer tus procesos.</b><br>Tocá “Agregar proceso” para empezar.</div>`;
+      list.appendChild(empty);
+    }
+
+    counterEl.textContent = procesos.length;
+  }
+
+  // ---- State helpers ----
+  const findProc = (pid) => procesos.find(p => p.id === pid);
+
+  // ---- Events: structural (delegated, re-render) ----
+  list.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-act]');
+    if(!btn) return;
+    const act = btn.dataset.act;
+    const card = btn.closest('.proc');
+    const pid = card && card.dataset.pid;
+    const proc = findProc(pid);
+    if(!proc && act !== null) return;
+
+    if(act === 'del-proc'){
+      procesos = procesos.filter(p => p.id !== pid);
+      render();
+    } else if(act === 'add-resp'){
+      proc.responsables.push(newResponsable());
+      render();
+      const rows = card.querySelectorAll('.resp-row');
+      const lastInput = rows.length ? rows[rows.length-1].querySelector('input') : null;
+      // card is stale after re-render; refocus via fresh query
+      const freshCard = list.querySelector(`.proc[data-pid="${pid}"]`);
+      const freshRows = freshCard.querySelectorAll('.resp-row');
+      if(freshRows.length) freshRows[freshRows.length-1].querySelector('input').focus();
+    } else if(act === 'del-resp'){
+      const row = btn.closest('.resp-row');
+      const rid = row.dataset.rid;
+      proc.responsables = proc.responsables.filter(r => r.id !== rid);
+      render();
+    }
+  });
+
+  // ---- Events: text input (no re-render, keep focus) ----
+  list.addEventListener('input', (e) => {
+    const inp = e.target;
+    const f = inp.dataset.f;
+    if(!f) return;
+    const card = inp.closest('.proc');
+    const proc = findProc(card.dataset.pid);
+    if(!proc) return;
+    const row = inp.closest('.resp-row');
+    if(row){
+      const resp = proc.responsables.find(r => r.id === row.dataset.rid);
+      if(resp) resp[f] = inp.value;
+      if(f === 'mail'){
+        const ok = inp.value === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(inp.value);
+        inp.classList.toggle('warn', !ok);
+      }
+    } else {
+      proc[f] = inp.value;
+    }
+  });
+
+  // ---- Add process ----
+  $('#add-proc-btn').addEventListener('click', () => {
+    procesos.push(newProceso());
+    render();
+    const cards = list.querySelectorAll('.proc');
+    if(cards.length) cards[cards.length-1].querySelector('.name-input').focus();
+    document.querySelector('.add-proc-wrap').scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  // ---- Build payload ----
+  function buildData(){
+    return {
+      formulario: 'Relevamiento de procesos para Dashboard',
+      generado_por: 'Loopers',
+      fecha: new Date().toISOString(),
+      concesionaria: 'Long',
+      procesos: procesos.map(p => ({
+        nombre: p.nombre.trim(),
+        descripcion: p.descripcion.trim(),
+        responsables: p.responsables.map(r => ({
+          nombre: r.nombre.trim(),
+          mail: r.mail.trim(),
+          telefono: r.telefono.trim(),
+          rol: r.rol.trim()
+        }))
+      }))
+    };
+  }
+
+  function buildSummary(){
+    const d = buildData();
+    const lines = [];
+    lines.push('RELEVAMIENTO DE PROCESOS — DASHBOARD');
+    lines.push('Concesionaria: ' + d.concesionaria);
+    lines.push('Fecha: ' + new Date(d.fecha).toLocaleDateString('es-AR'));
+    lines.push('');
+    if(d.procesos.length === 0){
+      lines.push('(Sin procesos cargados)');
+    }
+    d.procesos.forEach((p, i) => {
+      lines.push(`PROCESO ${i+1}: ${p.nombre || '(sin nombre)'}`);
+      if(p.descripcion) lines.push('  Descripción: ' + p.descripcion);
+      lines.push('  Responsables:');
+      if(p.responsables.length === 0){
+        lines.push('    (sin responsables)');
+      } else {
+        p.responsables.forEach(r => {
+          const parts = [r.nombre || '(sin nombre)'];
+          if(r.rol) parts.push(r.rol);
+          if(r.mail) parts.push(r.mail);
+          if(r.telefono) parts.push(r.telefono);
+          lines.push('    - ' + parts.join(' · '));
+        });
+      }
+      lines.push('');
+    });
+    return lines.join('\n');
+  }
+
+  // ---- Toast ----
+  let toastTimer;
+  function toast(msg){
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ---- Download ----
+  $('#download-btn').addEventListener('click', () => {
+    const data = buildData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'relevamiento-procesos-long.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('Archivo descargado · mandánoslo a Loopers');
+  });
+
+  // ---- Copy ----
+  $('#copy-btn').addEventListener('click', async () => {
+    const text = buildSummary();
+    try{
+      await navigator.clipboard.writeText(text);
+      toast('Resumen copiado al portapapeles');
+    }catch(err){
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); toast('Resumen copiado'); }
+      catch(e2){ toast('No se pudo copiar automáticamente'); }
+      document.body.removeChild(ta);
+    }
+  });
+
+  // ---- Import (resume) ----
+  $('#import-btn').addEventListener('click', () => $('#import-file').click());
+  $('#import-file').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try{
+        const d = JSON.parse(reader.result);
+        procesos = (d.procesos || []).map(p => ({
+          id: nextId(),
+          nombre: p.nombre || '',
+          descripcion: p.descripcion || '',
+          responsables: (p.responsables && p.responsables.length ? p.responsables : []).map(r => ({
+            id: nextId(),
+            nombre: r.nombre || '', mail: r.mail || '',
+            telefono: r.telefono || '', rol: r.rol || ''
+          }))
+        }));
+        render();
+        toast('Datos cargados · podés seguir completando');
+      }catch(err){
+        toast('No se pudo leer el archivo');
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  });
+
+  // ---- Init ----
+  render();
+})();
+</script>
+</body>
+</html>
