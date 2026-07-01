@@ -1,4 +1,5 @@
 import { listSubmissions } from "@/lib/db";
+import DeleteSubmissionButton from "./DeleteSubmissionButton";
 
 export const dynamic = "force-dynamic";
 
@@ -77,9 +78,12 @@ export default async function AdminPage() {
                 <h2 className="text-base font-semibold text-zinc-900">
                   {s.payload.concesionaria || "(sin nombre)"}
                 </h2>
-                <span className="text-xs text-zinc-500">
-                  {formatDate(s.created_at)}
-                </span>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-zinc-500">
+                    {formatDate(s.created_at)}
+                  </span>
+                  <DeleteSubmissionButton id={s.id} />
+                </div>
               </div>
 
               <div className="mt-4 flex flex-col gap-4">

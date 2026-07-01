@@ -90,3 +90,9 @@ export async function listSubmissions(): Promise<SubmissionRow[]> {
   );
   return rows;
 }
+
+export async function deleteSubmission(id: number): Promise<boolean> {
+  await ensureSchema();
+  const { rowCount } = await getPool().query(`DELETE FROM submissions WHERE id = $1`, [id]);
+  return (rowCount ?? 0) > 0;
+}

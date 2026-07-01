@@ -31,5 +31,6 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/export/:path*"],
+  // Nota: /api/submissions (sin id) queda afuera a propósito, es el POST público del formulario.
+  matcher: ["/admin/:path*", "/api/export/:path*", "/api/submissions/:id"],
 };
