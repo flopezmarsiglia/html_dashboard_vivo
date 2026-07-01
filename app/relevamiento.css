@@ -53,7 +53,7 @@
 .relevamiento-page .page-title h1{margin:0;}
 
 /* ---------- Flow / spine ---------- */
-.relevamiento-page .flow{position:relative;margin-top:26px;}
+.relevamiento-page .flow{position:relative;margin-top:26px;margin-bottom:110px;}
 .relevamiento-page .flow::before{
   content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
   background:linear-gradient(var(--line-strong),var(--line-strong));
