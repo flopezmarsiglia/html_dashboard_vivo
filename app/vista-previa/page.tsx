@@ -3,7 +3,7 @@ import "../theme.css";
 import "../vista-previa.css";
 import TabNav from "../components/TabNav";
 
-const DEALERSHIP_NAME = process.env.NEXT_PUBLIC_DEALERSHIP_NAME || "Long";
+const DEALERSHIP_NAME = process.env.NEXT_PUBLIC_DEALERSHIP_NAME || "";
 
 const AREAS = [
   { nombre: "Ventas", procesos: ["Ventas 0km", "Ventas de usados", "Leads y CRM"] },
@@ -49,7 +49,9 @@ export default function VistaPreviaPage() {
 
       <div className="pv-wrap">
         <div className="pv-intro">
-          <div className="eyebrow">Vista previa · Concesionaria {DEALERSHIP_NAME}</div>
+          <div className="eyebrow">
+            {DEALERSHIP_NAME ? `Vista previa · Concesionaria ${DEALERSHIP_NAME}` : "Vista previa"}
+          </div>
           <h1>Así se va a alimentar tu Dashboard en vivo</h1>
           <p className="pv-lead">
             El dashboard se arma a partir de una base de datos que junta la

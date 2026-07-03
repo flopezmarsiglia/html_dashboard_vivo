@@ -27,7 +27,7 @@ type Area = {
   procesos: Proceso[];
 };
 
-const DEALERSHIP_NAME = process.env.NEXT_PUBLIC_DEALERSHIP_NAME || "Long";
+const DEALERSHIP_NAME = process.env.NEXT_PUBLIC_DEALERSHIP_NAME || "";
 
 function newResponsable(): Responsable {
   return { id: crypto.randomUUID(), nombre: "", mail: "", telefono: "", rol: "" };
@@ -319,7 +319,9 @@ export default function Home() {
 
       <div className="wrap">
         <div className="page-title">
-          <div className="eyebrow">Concesionaria {DEALERSHIP_NAME}</div>
+          <div className="eyebrow">
+            {DEALERSHIP_NAME ? `Concesionaria ${DEALERSHIP_NAME}` : "Relevamiento de procesos"}
+          </div>
           <h1>Diseño de Dashboard en vivo</h1>
         </div>
 
